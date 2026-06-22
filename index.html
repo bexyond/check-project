@@ -18,27 +18,27 @@
 }
 
 :root {
-  /* ===== Hologram (default) ===== */
-  --bg-0: #0c0a1c;
-  --bg-1: #15102e;
-  --bg-2: #1d1340;
-  --bg-card: #16122e;
-  --grid: rgba(185,138,255,0.10);
-  --text: #f3f0ff;
-  --text-dim: rgba(243,240,255,0.72);
-  --text-faint: rgba(243,240,255,0.42);
-  --rose: #b98aff;
-  --rose-deep: #8a5cf0;
-  --rose-bright: #c9a8ff;
-  --rose-soft: #d9c6ff;
-  --accent2: #6fb3ff;
-  --silver: #cfc6e8;
-  --line: rgba(185,138,255,0.10);
-  --line-strong: rgba(185,138,255,0.18);
-  --ring: rgba(185,138,255,0.30);
-  --glow: rgba(185,138,255,0.55);
+  /* ===== Cobalt (default, xanh dương) ===== */
+  --bg-0: #061227;
+  --bg-1: #0a2350;
+  --bg-2: #0e3470;
+  --bg-card: #0a1d40;
+  --grid: rgba(135,175,255,0.10);
+  --text: #f5f8ff;
+  --text-dim: rgba(245,248,255,0.72);
+  --text-faint: rgba(245,248,255,0.42);
+  --rose: #6f9fff;
+  --rose-deep: #2c66e4;
+  --rose-bright: #9dbdff;
+  --rose-soft: #c6d8ff;
+  --accent2: #8ad0ff;
+  --silver: #d6ddf2;
+  --line: rgba(135,175,255,0.10);
+  --line-strong: rgba(135,175,255,0.18);
+  --ring: rgba(135,175,255,0.30);
+  --glow: rgba(135,175,255,0.5);
   --surface: rgba(255,255,255,0.05);
-  --panel: rgba(18,14,38,0.94);
+  --panel: rgba(8,24,56,0.94);
   --shadow: rgba(0,0,0,0.6);
   --libra: 'Oswald', 'Cormorant Garamond', serif;
   --condensed: 'Anton', 'Cormorant Garamond', serif;
@@ -46,6 +46,16 @@
   --serif: 'Cormorant Garamond', serif;
   --sans: 'Be Vietnam Pro', 'Inter', sans-serif;
   --mono: 'JetBrains Mono', monospace;
+}
+/* ===== Champagne (vàng ấm, thay Hologram) ===== */
+body[data-theme="champagne"] {
+  --bg-0: #16120a; --bg-1: #2a2110; --bg-2: #3e3015; --bg-card: #221b0e;
+  --grid: rgba(240,200,120,0.10);
+  --text: #fff7e8; --text-dim: rgba(255,247,232,0.74); --text-faint: rgba(255,247,232,0.44);
+  --rose: #f0c674; --rose-deep: #d4a23c; --rose-bright: #ffe0a0; --rose-soft: #ffeccb; --accent2: #ffd98a;
+  --silver: #e8dcc2; --line: rgba(240,200,120,0.10); --line-strong: rgba(240,200,120,0.20);
+  --ring: rgba(240,200,120,0.32); --glow: rgba(240,200,120,0.5);
+  --surface: rgba(255,255,255,0.05); --panel: rgba(34,27,14,0.94); --shadow: rgba(0,0,0,0.6);
 }
 body[data-theme="aurora"] {
   --bg-0: #06121a; --bg-1: #0d2630; --bg-2: #134048; --bg-card: #0a242c;
@@ -65,23 +75,15 @@ body[data-theme="sunset"] {
   --ring: rgba(255,138,106,0.30); --glow: rgba(255,138,106,0.5);
   --surface: rgba(255,255,255,0.05); --panel: rgba(40,16,26,0.94); --shadow: rgba(0,0,0,0.6);
 }
-body[data-theme="cobalt"] {
-  --bg-0: #061227; --bg-1: #0a2350; --bg-2: #0e3470; --bg-card: #0a1d40;
-  --grid: rgba(135,175,255,0.10);
-  --text: #f5f8ff; --text-dim: rgba(245,248,255,0.72); --text-faint: rgba(245,248,255,0.42);
-  --rose: #6f9fff; --rose-deep: #2c66e4; --rose-bright: #9dbdff; --rose-soft: #c6d8ff; --accent2: #8ad0ff;
-  --silver: #d6ddf2; --line: rgba(135,175,255,0.10); --line-strong: rgba(135,175,255,0.18);
-  --ring: rgba(135,175,255,0.30); --glow: rgba(135,175,255,0.5);
-  --surface: rgba(255,255,255,0.05); --panel: rgba(8,24,56,0.94); --shadow: rgba(0,0,0,0.6);
-}
 body[data-theme="light"] {
-  --bg-0: #eef0fa; --bg-1: #e2e5f4; --bg-2: #d6daf0; --bg-card: #ffffff;
-  --grid: rgba(90,80,160,0.08);
-  --text: #1a1730; --text-dim: rgba(26,23,48,0.72); --text-faint: rgba(26,23,48,0.45);
-  --rose: #7a5cf0; --rose-deep: #5a3cd0; --rose-bright: #6a52c8; --rose-soft: #6a52c8; --accent2: #4a8cf0;
-  --silver: #4a4570; --line: rgba(122,92,240,0.16); --line-strong: rgba(122,92,240,0.26);
-  --ring: rgba(122,92,240,0.28); --glow: rgba(122,92,240,0.4);
-  --surface: rgba(26,23,48,0.05); --panel: rgba(255,255,255,0.97); --shadow: rgba(60,50,120,0.22);
+  /* bản Light của xanh dương (Cobalt) */
+  --bg-0: #eef2fc; --bg-1: #e1e8f7; --bg-2: #d4def2; --bg-card: #ffffff;
+  --grid: rgba(44,102,228,0.08);
+  --text: #0f1f3d; --text-dim: rgba(15,31,61,0.74); --text-faint: rgba(15,31,61,0.46);
+  --rose: #2c66e4; --rose-deep: #1a4dbf; --rose-bright: #3f7af0; --rose-soft: #2c66e4; --accent2: #1f7ad0;
+  --silver: #2c4670; --line: rgba(44,102,228,0.16); --line-strong: rgba(44,102,228,0.26);
+  --ring: rgba(44,102,228,0.28); --glow: rgba(44,102,228,0.4);
+  --surface: rgba(15,31,61,0.05); --panel: rgba(255,255,255,0.97); --shadow: rgba(30,60,120,0.22);
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -185,11 +187,11 @@ nav .nav-right { display: flex; align-items: center; gap: 18px; }
 }
 .theme-switch .sw:hover { transform: scale(1.2); }
 .theme-switch .sw.active { border-color: #fff; box-shadow: 0 0 0 2px rgba(255,255,255,0.25), 0 0 10px currentColor; }
-.sw[data-t="hologram"]{ background: linear-gradient(135deg,#b98aff,#6fb3ff); color:#b98aff; }
+.sw[data-t="cobalt"]{ background: linear-gradient(135deg,#6f9fff,#2c66e4); color:#6f9fff; }
+.sw[data-t="champagne"]{ background: linear-gradient(135deg,#f0c674,#d4a23c); color:#f0c674; }
 .sw[data-t="aurora"]{ background: linear-gradient(135deg,#5ef0c0,#8a8cff); color:#5ef0c0; }
 .sw[data-t="sunset"]{ background: linear-gradient(135deg,#ff8a6a,#ffc678); color:#ff8a6a; }
-.sw[data-t="cobalt"]{ background: linear-gradient(135deg,#6f9fff,#2c66e4); color:#6f9fff; }
-.sw[data-t="light"]{ background: linear-gradient(135deg,#fff,#d9d2f5); color:#c6baff; }
+.sw[data-t="light"]{ background: linear-gradient(135deg,#fff,#cfe0ff); color:#9dbdff; }
 body[data-theme="light"] .theme-switch .sw { border-color: rgba(26,23,48,0.3); }
 @media (max-width: 768px) {
   nav { padding: 14px 20px; }
@@ -1738,10 +1740,10 @@ footer {
   <a class="logo" href="index.html" aria-label="Về trang chủ"><img src="assets/h3t.png" alt="H3T.ONLYFORCB"></a>
   <div class="nav-right">
     <div class="theme-switch" id="themeSwitch" role="group" aria-label="Đổi màu">
-      <button class="sw" data-t="hologram" title="Hologram" type="button"></button>
+      <button class="sw" data-t="cobalt" title="Cobalt" type="button"></button>
+      <button class="sw" data-t="champagne" title="Champagne" type="button"></button>
       <button class="sw" data-t="aurora" title="Aurora" type="button"></button>
       <button class="sw" data-t="sunset" title="Sunset" type="button"></button>
-      <button class="sw" data-t="cobalt" title="Cobalt" type="button"></button>
       <button class="sw" data-t="light" title="Light" type="button"></button>
     </div>
     <a class="nav-cta" href="https://docs.google.com/forms/d/e/1FAIpQLSc-2ZfbVmK_86bgz4Siqrorj3fsZsMKlTqtjJLFRxIh71SDHQ/viewform" id="submitBtn">+ Đăng ký</a>
@@ -1846,11 +1848,11 @@ footer {
 
 /* ===== Theme switcher ===== */
 (function themes(){
-  const KEY='bex_hub_theme', valid=['hologram','aurora','sunset','cobalt','light'];
-  let cur='hologram';
+  const KEY='bex_hub_theme_v2', valid=['cobalt','champagne','aurora','sunset','light'];
+  let cur='cobalt';
   try { const v=localStorage.getItem(KEY); if(valid.includes(v)) cur=v; } catch(e){}
   function apply(t){
-    if(t==='hologram') document.body.removeAttribute('data-theme');
+    if(t==='cobalt') document.body.removeAttribute('data-theme');
     else document.body.setAttribute('data-theme',t);
     document.querySelectorAll('.theme-switch .sw').forEach(b=>b.classList.toggle('active', b.dataset.t===t));
     try{ localStorage.setItem(KEY,t); }catch(e){}
