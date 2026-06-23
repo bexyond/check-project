@@ -1700,34 +1700,13 @@ footer {
 .marq-rows::before { left: 0; background: linear-gradient(90deg, var(--bg-0) 0%, transparent 100%); }
 .marq-rows::after { right: 0; background: linear-gradient(270deg, var(--bg-0) 0%, transparent 100%); }
 
-.marq-row { overflow: hidden; padding: 12px 0; position: relative; -webkit-user-select: none; user-select: none; }
+.marq-row { overflow: hidden; padding: 12px 0; position: relative; cursor: grab; -webkit-user-select: none; user-select: none; touch-action: pan-y; }
+.marq-row.dragging { cursor: grabbing; }
 .marq-track {
   display: flex; gap: 22px; width: max-content;
-  animation: marqMove var(--dur, 40s) linear infinite;
   will-change: transform;
 }
-.marq-row.rev .marq-track { animation-direction: reverse; }
-.marq-row:hover .marq-track { animation-play-state: paused; }
-/* fast-forward / rewind per row when its arrows pressed */
-.marq-row.ff .marq-track { animation-duration: 6s; animation-play-state: running !important; }
-.marq-row.rw .marq-track { animation-duration: 6s; animation-direction: reverse; animation-play-state: running !important; }
-.marq-row.rev.rw .marq-track { animation-direction: normal; }
 @keyframes marqMove { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-
-/* nav arrows (per row) */
-.marq-nav {
-  position: absolute; top: 50%; transform: translateY(-50%); z-index: 8;
-  width: 42px; height: 42px; border-radius: 50%; cursor: pointer;
-  display: flex; align-items: center; justify-content: center;
-  background: var(--panel); border: 1px solid var(--line-strong); color: var(--text);
-  font-size: 19px; line-height: 1; transition: background .15s, transform .15s, border-color .15s;
-  -webkit-user-select: none; user-select: none;
-}
-.marq-nav:hover { border-color: var(--rose); color: var(--rose); transform: translateY(-50%) scale(1.08); }
-.marq-nav:active { transform: translateY(-50%) scale(.94); }
-.marq-nav.prev { left: 10px; }
-.marq-nav.next { right: 10px; }
-@media (max-width: 560px){ .marq-nav { width: 34px; height: 34px; font-size: 16px; } }
 
 .marq-card {
   position: relative; flex: 0 0 auto; width: 280px; height: 340px;
@@ -1820,10 +1799,9 @@ footer {
     <img class="freq-logo logo-dark" src="assets/LOGO-NOTAGLINE.png" alt="BE[X]YOND" />
     <img class="freq-logo logo-light" src="assets/LOGO-NOTAGLINE-light.png" alt="BE[X]YOND" />
   </h1>
-  <p class="freq-sub">Mỗi project là một tín hiệu đang phát sóng. Quét radar, chạm vào tín hiệu để mở hồ sơ chi tiết.</p>
+  <p class="freq-sub">Mỗi dự án là một tín hiệu đang phát sóng. Quét radar, chạm vào tín hiệu để mở hồ sơ chi tiết.</p>
   <div class="freq-stats">
-    <div><div class="freq-stat-num" id="statTotal">—</div><div class="freq-stat-label">Tín hiệu</div></div>
-    <div><div class="freq-stat-num" id="resultCountNum">—</div><div class="freq-stat-label">Đang hiện</div></div>
+    <div><div class="freq-stat-num" id="statTotal">—</div><div class="freq-stat-label">Dự án</div></div>
   </div>
 </header>
 
@@ -1836,13 +1814,9 @@ footer {
     </div>
     <div class="marq-rows" id="marqRows">
       <div class="marq-row" data-row="1">
-        <button class="marq-nav prev" type="button" aria-label="Lùi hàng 1">‹</button>
-        <button class="marq-nav next" type="button" aria-label="Tiến hàng 1">›</button>
         <div class="marq-track" id="marqTrack1"></div>
       </div>
       <div class="marq-row rev" data-row="2">
-        <button class="marq-nav prev" type="button" aria-label="Lùi hàng 2">‹</button>
-        <button class="marq-nav next" type="button" aria-label="Tiến hàng 2">›</button>
         <div class="marq-track" id="marqTrack2"></div>
       </div>
       <div class="marq-empty" id="emptyState" style="display:none;">
@@ -3587,7 +3561,11 @@ function buildMarqCard(p, isMatch) {
       <div class="mc-title">${escapeHTML(p.title || 'Project')}</div>
       ${p.by ? `<div class="mc-by">— ${escapeHTML(p.by)}</div>` : ''}
     </div>`;
-  if (isMatch) card.addEventListener('click', () => openModal(p));
+  if (isMatch) card.addEventListener('click', (e) => {
+    const row = card.closest('.marq-row');
+    if (row && row.dataset.justDragged) return; // vừa kéo, không mở modal
+    openModal(p);
+  });
   return card;
 }
 
@@ -3601,7 +3579,7 @@ function fillTrack(track, items, filteredView, filteredIds, speed) {
     track.appendChild(buildMarqCard(p, isMatch));
   });
   // duration scales with number of cards for a steady pace
-  track.style.setProperty('--dur', Math.max(16, items.length * 3.2) + 's');
+  track.style.willChange = 'transform';
 }
 
 function renderMarquee() {
@@ -3636,6 +3614,7 @@ function renderMarquee() {
   const rcn = document.getElementById('resultCountNum');
   if (rcn) rcn.textContent = filtered.length;
   initStats();
+  if (window.__marqueeReinit) requestAnimationFrame(() => window.__marqueeReinit());
 }
 
 initHeroRingDrag();
@@ -3968,34 +3947,105 @@ window.addEventListener('pageshow', playBackgroundMusic);
 setTimeout(playBackgroundMusic, 300);
 
 // ============ Marquee arrow nav per row (fast-forward / rewind) ============
-(function marqueeNav(){
+(function marqueeEngine(){
   const rows = document.getElementById('marqRows');
   if(!rows) return;
-  let held = null;        // row đang được giữ
-  let clickTimers = new WeakMap();
 
-  function release(row){ if(row) row.classList.remove('ff','rw'); }
+  const engines = [];
 
-  rows.querySelectorAll('.marq-nav').forEach(btn=>{
-    const row = btn.closest('.marq-row');
-    const cls = btn.classList.contains('next') ? 'ff' : 'rw';
+  function setup(rowEl){
+    const track = rowEl.querySelector('.marq-track');
+    if(!track) return null;
+    const reverse = rowEl.classList.contains('rev');
+    const baseSpeed = (reverse ? 1 : -1) * 0.55; // px/frame ở chế độ tự trôi (hàng 2 ngược chiều)
+    const eng = {
+      rowEl, track, reverse,
+      offset: 0,
+      vel: 0,                // vận tốc do kéo/quán tính
+      dragging: false,
+      hovering: false,
+      lastX: 0,
+      half: 0,
+    };
 
-    // giữ để tua liên tục
-    const startHold = (e)=>{ e.preventDefault(); row.classList.remove('ff','rw'); row.classList.add(cls); held = row; };
-    btn.addEventListener('mousedown', startHold);
-    btn.addEventListener('touchstart', startHold, {passive:false});
+    function measure(){ eng.half = track.scrollWidth / 2 || 0; }
+    measure();
+    // đo lại sau khi ảnh tải
+    setTimeout(measure, 400);
+    window.addEventListener('resize', measure);
 
-    // bấm nhanh để tua một nhịp
-    btn.addEventListener('click', ()=>{
-      row.classList.remove('ff','rw'); row.classList.add(cls);
-      clearTimeout(clickTimers.get(row));
-      clickTimers.set(row, setTimeout(()=> release(row), 600));
+    function wrap(){
+      if(eng.half <= 0) return;
+      if(eng.offset <= -eng.half) eng.offset += eng.half;
+      else if(eng.offset >= 0) eng.offset -= eng.half;
+    }
+
+    // ----- drag -----
+    function down(x){ eng.dragging = true; eng.lastX = x; eng.vel = 0; eng.moved = 0; rowEl.classList.add('dragging'); }
+    function move(x){
+      if(!eng.dragging) return;
+      const dx = x - eng.lastX;
+      eng.lastX = x;
+      eng.moved += Math.abs(dx);
+      eng.offset += dx;
+      eng.vel = dx;            // dùng làm quán tính khi thả
+      wrap();
+      apply();
+    }
+    function up(){
+      if(!eng.dragging) return;
+      eng.dragging = false;
+      rowEl.classList.remove('dragging');
+      // nếu vừa kéo đủ xa thì chặn click mở modal ngay sau đó
+      if(eng.moved > 6){
+        rowEl.dataset.justDragged = '1';
+        setTimeout(()=>{ delete rowEl.dataset.justDragged; }, 50);
+      }
+    }
+
+    rowEl.addEventListener('pointerdown', e=>{ down(e.clientX); rowEl.setPointerCapture?.(e.pointerId); });
+    rowEl.addEventListener('pointermove', e=>{ if(eng.dragging){ e.preventDefault(); move(e.clientX); } });
+    rowEl.addEventListener('pointerup', up);
+    rowEl.addEventListener('pointercancel', up);
+    rowEl.addEventListener('pointerleave', ()=>{ eng.hovering=false; up(); });
+    rowEl.addEventListener('pointerenter', ()=>{ eng.hovering=true; });
+
+    function apply(){ track.style.transform = 'translate3d(' + eng.offset + 'px,0,0)'; }
+    eng.apply = apply; eng.wrap = wrap; eng.measure = measure; eng.baseSpeed = baseSpeed;
+    return eng;
+  }
+
+  function init(){
+    engines.length = 0;
+    rows.querySelectorAll('.marq-row').forEach(r=>{
+      const e = setup(r);
+      if(e) engines.push(e);
     });
-  });
+  }
+  init();
+  // dựng lại engine khi marquee được render lại
+  window.__marqueeReinit = init;
 
-  // thả chuột/ngón tay ở bất kỳ đâu -> ngừng tua-giữ
-  const stopHold = ()=>{ if(held){ release(held); held = null; } };
-  ['mouseup','touchend','touchcancel'].forEach(ev=> window.addEventListener(ev, stopHold));
+  function frame(){
+    for(const e of engines){
+      if(e.half <= 0){ e.measure(); }
+      if(e.dragging){
+        // đang kéo: offset cập nhật trong move()
+      } else if(Math.abs(e.vel) > 0.4){
+        // quán tính sau khi thả
+        e.offset += e.vel;
+        e.vel *= 0.92;
+        e.wrap();
+      } else if(!e.hovering){
+        // tự trôi
+        e.offset += e.baseSpeed;
+        e.wrap();
+      }
+      if(e.apply) e.apply();
+    }
+    requestAnimationFrame(frame);
+  }
+  requestAnimationFrame(frame);
 })();
 
 // ============ INIT ============
