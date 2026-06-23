@@ -120,9 +120,10 @@ body::before {
   mix-blend-mode: overlay;
 }
 body[data-theme="light"]::before { opacity: 0.03; mix-blend-mode: multiply; }
-body[data-theme="light"] nav .logo img {
-  filter: invert(1) hue-rotate(180deg) brightness(0.82);
-}
+/* H3T nav logo variants */
+nav .logo img.h3t-light { display: none; }
+body[data-theme="light"] nav .logo img.h3t-dark { display: none; }
+body[data-theme="light"] nav .logo img.h3t-light { display: block; }
 /* BE[X]YOND logo variants (footer + hero + title) */
 .footer-brand .name img.logo-light,
 .carousel-hero img.logo-light,
@@ -386,10 +387,9 @@ body[data-theme="light"] .theme-switch .sw { border-color: rgba(26,23,48,0.3); }
 
 /* ===== GRID VIEW MODE ===== */
 .projects-grid-wrapper {
-  margin-top: -210px;
+  margin-top: 0;
   padding: 14px 44px 28px;
-  background: var(--bg-0);
-  border-top: 1px solid var(--line);
+  background: transparent;
 }
 
 .projects-grid {
@@ -616,6 +616,8 @@ main {
   padding: 0 0 80px;
   overflow: hidden;
 }
+/* legacy hero carousel is fully replaced by radar/marquee; keep in DOM (holds #gridContainer) but never show */
+#hero.carousel-shell { display: none !important; }
 .carousel-shell {
   position: relative;
   min-height: calc(100vh - 64px);
@@ -1757,7 +1759,7 @@ footer {
 
 <!-- ===== NAV ===== -->
 <nav>
-  <a class="logo" href="index.html" aria-label="Về trang chủ"><img src="assets/h3t.png" alt="H3T.ONLYFORCB"></a>
+  <a class="logo" href="index.html" aria-label="Về trang chủ"><img class="h3t-dark" src="assets/h3t.png" alt="H3T.ONLYFORCB"><img class="h3t-light" src="assets/h3t-light.png" alt="H3T.ONLYFORCB"></a>
   <div class="nav-right">
     <div class="theme-switch" id="themeSwitch" role="group" aria-label="Đổi màu">
       <button class="sw" data-t="cobalt" title="Cobalt" type="button"></button>
@@ -1794,7 +1796,7 @@ footer {
 
 <!-- ===== HERO HEADER ===== -->
 <header class="freq-head">
-  <div class="freq-kicker">◉ FREQUENCY HUB · [X] PROJECT</div>
+  <div class="freq-kicker">◉ FREQUENCY HUB · A FAN SIGNAL PROJECT</div>
   <h1 class="freq-title">
     <img class="freq-logo logo-dark" src="assets/LOGO-NOTAGLINE.png" alt="BE[X]YOND" />
     <img class="freq-logo logo-light" src="assets/LOGO-NOTAGLINE-light.png" alt="BE[X]YOND" />
@@ -3033,13 +3035,8 @@ function renderGridView() {
     return;
   }
 
-  // Hide empty state, restore hero in grid mode
+  // Hide empty state (legacy hero stays hidden via CSS)
   if (empty) empty.style.display = 'none';
-  const hero = document.getElementById('hero');
-  if (hero) {
-    hero.style.display = 'flex';
-    hero.setAttribute('data-grid-mode', 'true');
-  }
 
   // Create and add cards
   filtered.forEach((p, idx) => {
@@ -3062,7 +3059,7 @@ function switchView(view) {
   const hero = document.getElementById('hero');
 
   if (view === 'grid') {
-    // Grid view: hide radar, show card grid
+    // Grid view: hide radar, show card grid (keep header)
     const radarZone = document.querySelector('.marq-zone');
     if (radarZone) radarZone.style.display = 'none';
     if (hero) { hero.style.display = 'none'; }
@@ -3073,7 +3070,7 @@ function switchView(view) {
   } else {
     // Ring view = radar
     const radarZone = document.querySelector('.marq-zone');
-    if (radarZone) radarZone.style.display = 'flex';
+    if (radarZone) radarZone.style.display = 'block';
     if (gridViewWrapper) gridViewWrapper.style.display = 'none';
     if (toggleBtn) toggleBtn.textContent = '☰';
     render();
