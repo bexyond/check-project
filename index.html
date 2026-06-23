@@ -3977,30 +3977,38 @@ setTimeout(playBackgroundMusic, 300);
     }
 
     // ----- drag -----
-    function down(x){ eng.dragging = true; eng.lastX = x; eng.vel = 0; eng.moved = 0; rowEl.classList.add('dragging'); }
-    function move(x){
-      if(!eng.dragging) return;
+    function down(x){ eng.pendingX = x; eng.lastX = x; eng.vel = 0; eng.moved = 0; eng.dragging = false; eng.pressed = true; }
+    function move(x, e){
+      if(!eng.pressed) return;
       const dx = x - eng.lastX;
       eng.lastX = x;
       eng.moved += Math.abs(dx);
+      // chỉ bắt đầu kéo thật khi vượt ngưỡng -> mới capture (để click card vẫn chạy)
+      if(!eng.dragging){
+        if(eng.moved < 5) return;
+        eng.dragging = true;
+        rowEl.classList.add('dragging');
+        if(e && rowEl.setPointerCapture) { try { rowEl.setPointerCapture(e.pointerId); } catch(_){} }
+      }
+      if(e) e.preventDefault();
       eng.offset += dx;
-      eng.vel = dx;            // dùng làm quán tính khi thả
+      eng.vel = dx;
       wrap();
       apply();
     }
     function up(){
+      eng.pressed = false;
       if(!eng.dragging) return;
       eng.dragging = false;
       rowEl.classList.remove('dragging');
-      // nếu vừa kéo đủ xa thì chặn click mở modal ngay sau đó
       if(eng.moved > 6){
         rowEl.dataset.justDragged = '1';
         setTimeout(()=>{ delete rowEl.dataset.justDragged; }, 50);
       }
     }
 
-    rowEl.addEventListener('pointerdown', e=>{ down(e.clientX); rowEl.setPointerCapture?.(e.pointerId); });
-    rowEl.addEventListener('pointermove', e=>{ if(eng.dragging){ e.preventDefault(); move(e.clientX); } });
+    rowEl.addEventListener('pointerdown', e=>{ down(e.clientX); });
+    rowEl.addEventListener('pointermove', e=>{ move(e.clientX, e); });
     rowEl.addEventListener('pointerup', up);
     rowEl.addEventListener('pointercancel', up);
     rowEl.addEventListener('pointerleave', ()=>{ eng.hovering=false; up(); });
