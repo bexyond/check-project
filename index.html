@@ -1895,7 +1895,6 @@ const PROJECTS_TABLE = 'projects';
 const GOOGLE_DRIVE_API_KEY = 'AIzaSyCZkRafUsjUWDjcB6HlhQBXgD9tVZUo4so';
 
 // ============ INLINE SVG IMAGES (12 mini artworks) ============
-// Compact inline SVG data URIs — same tone as BE[X]YOND (black + rosé)
 function makeSVG(svg) {
   return 'data:image/svg+xml;base64,' + btoa(unescape(encodeURIComponent(svg)));
 }
@@ -2258,9 +2257,7 @@ const IMG = {
 };
 
 // ============ GALLERY VARIANT SVGS (extra mockup angles per project) ============
-// These act as "evidence photos" - different angles/moments of the same project
 function svgVariant(seed, kind) {
-  // Generate small variant SVGs with different compositions
   const variants = {
     'led-angle1': `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 800">${DEFS}
       <rect width="800" height="800" fill="#050305"/>${stars(35, seed)}
@@ -2596,7 +2593,6 @@ function svgVariant(seed, kind) {
   return makeSVG(variants[kind] || variants['gallery-detail']);
 }
 
-// Build a small library of variant images keyed by name
 const VARIANTS = {
   ledAngle1: svgVariant(101, 'led-angle1'),
   ledCrowd: svgVariant(102, 'led-crowd'),
@@ -2815,7 +2811,7 @@ function rebuildFilters() {
 // ============ STATE ============
 let filterType = 'all';
 let searchQuery = '';
-let currentView = 'ring'; // 'ring' or 'grid'
+let currentView = 'ring'; 
 
 function isFilteredView() {
   return filterType !== 'all' ||
@@ -3029,7 +3025,6 @@ function renderGridView() {
   // Handle empty state
   if (!filtered || filtered.length === 0) {
     if (empty) empty.style.display = 'block';
-    // Hide hero carousel in grid mode so empty state isn't covered
     const hero = document.getElementById('hero');
     if (hero) hero.style.display = 'none';
     if (gridShell) gridShell.style.display = 'none';
@@ -3168,7 +3163,6 @@ function initCarouselDrag() {
 document.getElementById('gridContainer').addEventListener('scroll', () => {
   requestAnimationFrame(updateCarouselActive);
 }, { passive: true });
-// Replaced by the 3D ring drag handler below.
 
 // ============ 3D HERO RING ============
 let heroRingRotation = 0;
@@ -3563,7 +3557,7 @@ function buildMarqCard(p, isMatch) {
     </div>`;
   if (isMatch) card.addEventListener('click', (e) => {
     const row = card.closest('.marq-row');
-    if (row && row.dataset.justDragged) return; // vừa kéo, không mở modal
+    if (row && row.dataset.justDragged) return; 
     openModal(p);
   });
   return card;
@@ -3689,7 +3683,6 @@ function openModal(p) {
     });
   });
 
-  // Wire "Về trang chủ" link to close modal
   content.querySelector('.modal-link.secondary')?.addEventListener('click', (e) => {
     e.preventDefault();
     closeModal();
@@ -3953,11 +3946,11 @@ setTimeout(playBackgroundMusic, 300);
     const track = rowEl.querySelector('.marq-track');
     if(!track) return null;
     const reverse = rowEl.classList.contains('rev');
-    const baseSpeed = (reverse ? 1 : -1) * 0.55; // px/frame ở chế độ tự trôi (hàng 2 ngược chiều)
+    const baseSpeed = (reverse ? 1 : -1) * 0.55; 
     const eng = {
       rowEl, track, reverse,
       offset: 0,
-      vel: 0,                // vận tốc do kéo/quán tính
+      vel: 0,                
       dragging: false,
       hovering: false,
       lastX: 0,
@@ -3966,7 +3959,6 @@ setTimeout(playBackgroundMusic, 300);
 
     function measure(){ eng.half = track.scrollWidth / 2 || 0; }
     measure();
-    // đo lại sau khi ảnh tải
     setTimeout(measure, 400);
     window.addEventListener('resize', measure);
 
@@ -3983,7 +3975,6 @@ setTimeout(playBackgroundMusic, 300);
       const dx = x - eng.lastX;
       eng.lastX = x;
       eng.moved += Math.abs(dx);
-      // chỉ bắt đầu kéo thật khi vượt ngưỡng -> mới capture (để click card vẫn chạy)
       if(!eng.dragging){
         if(eng.moved < 5) return;
         eng.dragging = true;
@@ -4027,21 +4018,17 @@ setTimeout(playBackgroundMusic, 300);
     });
   }
   init();
-  // dựng lại engine khi marquee được render lại
   window.__marqueeReinit = init;
 
   function frame(){
     for(const e of engines){
       if(e.half <= 0){ e.measure(); }
       if(e.dragging){
-        // đang kéo: offset cập nhật trong move()
       } else if(Math.abs(e.vel) > 0.4){
-        // quán tính sau khi thả
         e.offset += e.vel;
         e.vel *= 0.92;
         e.wrap();
       } else if(!e.hovering){
-        // tự trôi
         e.offset += e.baseSpeed;
         e.wrap();
       }
