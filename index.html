@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>FREQUENCY HUB — BE[X]YOND Projects · Cường Bạch 26th Birthday</title>
+<title>FREQUENCY HUB - BE[X]YOND Projects · Cường Bạch 26th Birthday</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Cinzel:wght@400;500;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
@@ -1794,14 +1794,15 @@ footer {
 
 <!-- ===== HERO HEADER ===== -->
 <header class="freq-head">
-  <div class="freq-kicker">◉ FREQUENCY HUB · A FAN SIGNAL PROJECT</div>
+  <div class="freq-kicker">◉ FREQUENCY HUB · [X] PROJECT</div>
   <h1 class="freq-title">
     <img class="freq-logo logo-dark" src="assets/LOGO-NOTAGLINE.png" alt="BE[X]YOND" />
     <img class="freq-logo logo-light" src="assets/LOGO-NOTAGLINE-light.png" alt="BE[X]YOND" />
   </h1>
-  <p class="freq-sub">Mỗi dự án là một tín hiệu đang phát sóng. Quét radar, chạm vào tín hiệu để mở hồ sơ chi tiết.</p>
+  <p class="freq-sub">Mỗi project là một tín hiệu đang phát sóng. Quét radar, chạm vào tín hiệu để mở hồ sơ chi tiết.</p>
   <div class="freq-stats">
-    <div><div class="freq-stat-num" id="statTotal">—</div><div class="freq-stat-label">Dự án</div></div>
+    <div><div class="freq-stat-num" id="statTotal">—</div><div class="freq-stat-label">Tín hiệu</div></div>
+    <div><div class="freq-stat-num" id="resultCountNum">—</div><div class="freq-stat-label">Đang hiện</div></div>
   </div>
 </header>
 
@@ -1809,7 +1810,7 @@ footer {
 <main id="grid">
   <section class="marq-zone">
     <div class="marq-meta">
-      <div>FREQ // <b>432.0 Hz</b> — DEDICATED MIX</div>
+      <div>FREQ // <b>236.0 Hz</b> — DEDICATED MIX</div>
       <div>SCAN: <b id="resultCount">— projects</b></div>
     </div>
     <div class="marq-rows" id="marqRows">
@@ -1824,7 +1825,7 @@ footer {
         <p>Thử chọn lại bộ lọc hoặc từ khoá khác.</p>
       </div>
     </div>
-    <div class="radar-hint">Băng tín hiệu tự trôi · Dùng ‹ › để tua nhanh · Di chuột để tạm dừng · Chạm vào tín hiệu để mở chi tiết</div>
+    <div class="radar-hint">Cảm ơn mọi người vì đã là một phần của dự án.</div>
   </section>
 
   <!-- legacy containers (hidden) kept for JS compatibility -->
@@ -3569,16 +3570,14 @@ function buildMarqCard(p, isMatch) {
   return card;
 }
 
-function fillTrack(track, items, filteredView, filteredIds, speed) {
+function fillTrack(track, items) {
   track.innerHTML = '';
   if (!items.length) return;
-  // duplicate the set once so translateX(-50%) loops seamlessly
+  // duplicate the set once so the loop is seamless
   const seq = items.concat(items);
   seq.forEach(p => {
-    const isMatch = !filteredView || filteredIds.has(p.id);
-    track.appendChild(buildMarqCard(p, isMatch));
+    track.appendChild(buildMarqCard(p, true));
   });
-  // duration scales with number of cards for a steady pace
   track.style.willChange = 'transform';
 }
 
@@ -3590,9 +3589,7 @@ function renderMarquee() {
   if (!t1 || !t2) return;
 
   const filtered = getFiltered();
-  const filteredView = isFilteredView();
-  const filteredIds = new Set(filtered.map(p => p.id));
-  const list = filteredView ? PROJECTS : filtered;
+  const list = filtered;
 
   if (list.length === 0) {
     t1.innerHTML = ''; t2.innerHTML = '';
@@ -3605,8 +3602,8 @@ function renderMarquee() {
     const half = Math.ceil(list.length / 2);
     const rowA = list.slice(0, half);
     const rowB = list.slice(half).length ? list.slice(half) : list.slice(0, half);
-    fillTrack(t1, rowA, filteredView, filteredIds);
-    fillTrack(t2, rowB, filteredView, filteredIds);
+    fillTrack(t1, rowA);
+    fillTrack(t2, rowB);
   }
 
   const rc = document.getElementById('resultCount');
